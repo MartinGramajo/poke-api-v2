@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 
 export default function PersonajeDetalle() {
   const params = useParams();
-  console.log("~ params", params);
   const [personaje, setPersonaje] = useState({
     id: "",
     name: "",
@@ -24,10 +23,10 @@ export default function PersonajeDetalle() {
         `https://pokeapi.co/api/v2/pokemon/${params.id}`
       );
       const personajeUnico = response.data;
-      console.log("~ personajeUnico", personajeUnico);
       setPersonaje(personajeUnico);
     };
     request();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -4,12 +4,11 @@ import { Link } from "react-router-dom";
 
 export default function CardPokemon({ pokemon }) {
   const { name } = pokemon;
-  console.log("~ pokemon", pokemon);
 
   return (
     <div>
       <Card className="my-2 mx-3" style={{ width: "18rem" }}>
-        <Card.Img variant="top" src="holder.js/100px180" />
+        <Card.Img variant="top" src={pokemon.sprites.back_default} />
         <Card.Body>
           <Card.Title>{name}</Card.Title>
           <Card.Text>Descripcion</Card.Text>
