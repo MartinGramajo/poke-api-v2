@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 
 import CardPokemon from "./CardPokemon";
 
@@ -9,6 +9,10 @@ export default function Lista() {
   const [pagina, setPagina] = useState(0);
   const [limite, setLimite] = useState(6);
   const [numero, setNumero] = useState(1);
+  // state donde guardamos el texto ingresado al input por el usuario.
+  const [input, setInput] = useState("");
+
+  const [types, setTypes] = useState([]);
 
   const isAnteriorDisabled = numero === 1;
   const isSiguienteDisabled = pokemons.length === 0;
@@ -30,17 +34,28 @@ export default function Lista() {
     } catch (error) {}
   };
 
+  // Endpoint limitado pokemon por pagina
   useEffect(() => {
     const request = async () => {
       const response = await axios.get(
         `https://pokeapi.co/api/v2/pokemon?limit=${limite}&offset=${pagina}`
       );
       const listaPersonajes = response.data.results;
-
       fetchPokemons(listaPersonajes);
     };
     request();
-  }, [pagina]);
+  }, [pagina, input]);
+
+  // Endpoint limitado pokemon por pagina
+  // useEffect(() => {
+  //   const request = async () => {
+  //     const response = await axios.get(`https://pokeapi.co/api/v2/pokemon`);
+  //     const allData = response.data.results;
+  //     console.log("~ allData ", allData);
+  //     fetchPokemons(allData);
+  //   };
+  //   request();
+  // }, []);
 
   // funcion para crear un nuevo array
   // const arraySoloNombres = pokemons.map((pokemon) => pokemon.name);
@@ -72,9 +87,17 @@ export default function Lista() {
       //   }
       // }
     }
-    console.log("~ arrayTypes", arrayTypes);
+    setTypes(arrayTypes);
   };
 
+  const pokemonFilter = pokemons.filter((pokemon) =>
+    // pokemon.types[0].type.name === "fire" ||
+    // pokemon.types[1].type.name === "fire"
+    pokemon.types.find(({ type }) => type.name === input)
+  );
+  console.log("~ pokemonFilter", pokemonFilter);
+
+  // Endpoint filtrado
   useEffect(() => {
     funcion();
   }, [pokemons]);
@@ -91,13 +114,35 @@ export default function Lista() {
   //   <CardPokemon pokemon={pokemon} />
   // ));
 
+  // funcion para capturar lo ingresado por el usuario en el input
+  const handleChange = (e) => {
+    e.preventDefault();
+    const { value } = e.target;
+    const newInput = value;
+    setInput(newInput);
+    // setPokemons(pokemonFilter);
+  };
+
   return (
     <div className="container">
       <h1 className="text-center">lista</h1>
+      <div className="mt-2 w-75 mx-auto">
+        <Form.Select
+          aria-label="Default select example"
+          onChange={handleChange}
+        >
+          <option value="">All types</option>
+          {types.map((type) => (
+            <option value={type}>{type}</option>
+          ))}
+        </Form.Select>
+      </div>
       <div className="d-flex flex-wrap justify-content-center">
-        {pokemons.map((pokemon, id) => (
-          <CardPokemon pokemon={pokemon} />
-        ))}
+        {input === ""
+          ? pokemons.map((pokemon, id) => <CardPokemon pokemon={pokemon} />)
+          : pokemonFilter.map((pokemon, id) => (
+              <CardPokemon pokemon={pokemon} />
+            ))}
       </div>
       <div className="d-flex  justify-content-center">
         <Button
